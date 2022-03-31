@@ -7,7 +7,7 @@ import os, string, json, datetime, shutil, codecs
 # --------------------------- #
 windowLen = 121 #длина окна скрипта
 os.system(f"mode con:cols={windowLen} lines=29") #устанавливаем длину окна скрипта
-logo = "@4Tipsy - neGit v2.1"
+logo = "@4Tipsy - neGit v3.0"
 
 print(windowLen * "#")
 print("###" + (windowLen - 6)*" " + "###")
@@ -50,8 +50,9 @@ if len(presets) > 0:
                 STORAGE = chosenPreset[0]
                 FILES = chosenPreset[1]
                 IGNORED = chosenPreset[2]
+                PRENAME = chosenPreset[3]
                 
-                presetUsed = True #для пропуска выбора файлов
+                presetUsed = True #для пропуска выбора файлов и т.д.
                 break
             except:
                 print("-неправильное название-")
@@ -97,24 +98,20 @@ if not presetUsed:
     print("\n")
     print("Выберите файлы для копирования")
     print(f"Доступные диски: {['%s:' % d for d in string.ascii_uppercase if os.path.exists('%s:' % d)]}")
-    print("-не выбирайте файлы noGit'а, иначе [storage] будет копироваться до бесконечности!-")
     while True:
             thisDir = input("Выберите папку > ")
             if os.path.exists(thisDir):
-                if os.getcwd() == os.path.abspath(thisDir):
-                    print("-выбрана папка скрипта! нельзя так делать!-")
-                    print("-закрытие программы...-")
-                    os.abort()
                 print(f"Путь - {os.path.abspath(thisDir)}")
                 print(f"Папка содержит: {os.listdir(thisDir)}")
 
                 print("Выбрать эту папку?")
                 if input("(1-yes // [any]-no)") == "1":
 
-                    prnt("\n")
+                    print("\n")
                     print(f"Выберите игнорируемые папки из\n {os.listdir(thisDir)}")
+                    print(f"{os.path.basename(STORAGE)}-(выбраное хранилище) уже указано по умолчанию, во избежание бесконечного копирования")
                     # реализация игнорирования папок
-                    IGNORED = []
+                    IGNORED = [os.path.basename(STORAGE)]
                     while True:
                         ignore = input("(имя папки или файла // [enter] - подтвердить) > ")
                         if ignore != "" and os.path.exists(os.path.abspath(thisDir)+"//"+ignore):
@@ -137,7 +134,7 @@ if not presetUsed:
 # -   копирование файлов    - #
 # --------------------------- #
 def mycopy(src, dst, follow_symlinks=True):
-    print(src,"->","[storage]", end='\r')
+    print(src,"->","dst", end='\r')
     return shutil.copy2(src, dst, follow_symlinks=follow_symlinks)
 def myignore(path, filenames):
     toReturn = []
@@ -145,8 +142,12 @@ def myignore(path, filenames):
         if filename in IGNORED:
             toReturn.append(filename)
     return toReturn
+
+
+if not presetUsed:
+    PRENAME = input("Какой префикс сделать перед именем сейва? > ")
 # так мы назовем сейв
-saveName = "sv" + datetime.datetime.today().strftime("(%Y-%m-%d)(%H-%M-%S)") + os.path.basename(FILES)
+saveName = PRENAME + datetime.datetime.today().strftime("(%Y-%m-%d)(%H-%M-%S)") + os.path.basename(FILES)
 
 shutil.copytree(FILES, (STORAGE + "\\" + saveName),ignore=myignore , copy_function=mycopy)
 
@@ -170,18 +171,19 @@ if not presetUsed:
     print(f"-->{STORAGE} -хранилище")
     print(f"-->{FILES} -то, что вы сохраняли")
     print(f"-->{IGNORED} -проигнорированно")
+    print(f"-->{PRENAME} -префикс пред именем сейва")
           
     if input("(1-yes // [any]-no)") == "1":
-        presetName = input("Название пресета(use only eng plz) > ")
-        presets[presetName] = [STORAGE, FILES, IGNORED]
-        print(f"presets[{presetName}] = [{STORAGE}, {FILES}, ignored:{IGNORED}]")
+        presetName = input("Название пресета > ")
+        presets[presetName] = [STORAGE, FILES, IGNORED, PRENAME]
+        print(f"presets[{presetName}] = [{STORAGE}, {FILES}, ignored:{IGNORED}, prename:{PRENAME}]")
           
         if input("Подтвердить?(1-yes // [any]-no)") == "1": 
             with open("presets.json", "w") as write_file:
                 json.dump(presets, write_file)
                 
 if presetUsed:
-    print(f"{STORAGE} <-- {FILES}, ignored:{IGNORED}")
+    print(f"{STORAGE} <-- {FILES}, ignored:{IGNORED}, prename:{PRENAME}")
     
 
 input("-работа скрипта завершена-")
@@ -195,21 +197,3 @@ input("-работа скрипта завершена-")
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
