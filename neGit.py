@@ -3,11 +3,11 @@ import os, string, json, datetime, shutil, codecs
 
 
 # --------------------------- #
-# -   собственно логотип    - #
+# -       лого и readme     - #
 # --------------------------- #
 windowLen = 121 #длина окна скрипта
 os.system(f"mode con:cols={windowLen} lines=29") #устанавливаем длину окна скрипта
-logo = "@4Tipsy - neGit v3.0"
+logo = "@4Tipsy - neGit v3.1"
 
 print(windowLen * "#")
 print("###" + (windowLen - 6)*" " + "###")
@@ -15,19 +15,19 @@ t = int(((windowLen - 6) - len(logo)) / 2)
 print("###" + " "*t + logo + " "*t + " ###")
 print("###" + (windowLen - 6)*" " + "###")
 print(windowLen * "#")
-print("*хранилище не должно находиться в копируемой папке,\n иначе будет вечное самокопирование")
-
 
 # readme
-print("Показать [readme]?")
-showReadme = input("(1-yes // [any]-no)")
-if showReadme == "1":
-    print(windowLen * "-")
+try:
     with codecs.open("README.md", encoding="utf-8") as readme:
+        print("\n")
+        print(windowLen * "-")
         lines = readme.readlines()
         for line in lines:
             print(line.strip())
     print(windowLen * "-")
+    print("\n")
+except:
+    print("\n","-не удалость открыть/найти readme-","\n")
 
 # --------------------------- #
 # - использование пресетов  - #
@@ -42,18 +42,29 @@ if len(presets) > 0:
         print("пресеты:",presets.keys())
         while True:
             try:
-                temp = input("Название пресета(0-выход) > ")
-                if temp == "0":
-                    break
-                chosenPreset = presets[temp]
+                presetName = input("Название пресета('?[пресет]'-инфо // 0-выход) > ")
+                if presetName[0] == "?":
+                    # вывести инфу о пресете
+                    preset4info = presets[presetName[1: len(presetName)]]
 
-                STORAGE = chosenPreset[0]
-                FILES = chosenPreset[1]
-                IGNORED = chosenPreset[2]
-                PRENAME = chosenPreset[3]
+                    print("-"*windowLen)
+                    print(f"{presetName[1: len(presetName)]}(префикс-{preset4info[3]}):")
+                    print(f"{preset4info[0]} <-- {preset4info[1]}")
+                    print(f"ignored: {preset4info[2]}")
+                    print("\n")
+
+                elif presetName == "0":
+                    break
+                else:
+                    chosenPreset = presets[presetName]
+
+                    STORAGE = chosenPreset[0]
+                    FILES = chosenPreset[1]
+                    IGNORED = chosenPreset[2]
+                    PRENAME = chosenPreset[3]
                 
-                presetUsed = True #для пропуска выбора файлов и т.д.
-                break
+                    presetUsed = True #для пропуска выбора файлов и т.д.
+                    break
             except:
                 print("-неправильное название-")
 else:
@@ -133,8 +144,9 @@ if not presetUsed:
 # --------------------------- #
 # -   копирование файлов    - #
 # --------------------------- #
+
 def mycopy(src, dst, follow_symlinks=True):
-    print(src,"->","dst", end='\r')
+    print("copying-", src, end='\r')
     return shutil.copy2(src, dst, follow_symlinks=follow_symlinks)
 def myignore(path, filenames):
     toReturn = []
@@ -155,9 +167,8 @@ with open((STORAGE + "\\" + saveName + "\\" + "info.txt"), "w") as file:
     file.write(f"Copied from {FILES}\n{logo}\nIgnored: {IGNORED}")
     
 print("\n")
-print("-результат: " + str(os.path.exists(STORAGE + "\\" + saveName)) + "-")
+print("-проверка: " + str(os.path.exists(STORAGE + "\\" + saveName)) + "-")
 print("Сохранено как: " + os.path.basename(STORAGE + "\\" + saveName))
-
 
 
 # --------------------------- #
@@ -174,26 +185,21 @@ if not presetUsed:
     print(f"-->{PRENAME} -префикс пред именем сейва")
           
     if input("(1-yes // [any]-no)") == "1":
-        presetName = input("Название пресета > ")
-        presets[presetName] = [STORAGE, FILES, IGNORED, PRENAME]
-        print(f"presets[{presetName}] = [{STORAGE}, {FILES}, ignored:{IGNORED}, prename:{PRENAME}]")
+        newPresetName = input("Название пресета > ")
+        presets[newPresetName] = [STORAGE, FILES, IGNORED, PRENAME]
+        print(f"presets[{newPresetName}] = [{STORAGE}, {FILES}, ignored:{IGNORED}, prename:{PRENAME}]")
           
         if input("Подтвердить?(1-yes // [any]-no)") == "1": 
             with open("presets.json", "w") as write_file:
                 json.dump(presets, write_file)
-                
+
+
+# ---- завершение работы ---- #
 if presetUsed:
     print(f"{STORAGE} <-- {FILES}, ignored:{IGNORED}, prename:{PRENAME}")
-    
-
 input("-работа скрипта завершена-")
 
 
 
 
-
-
-
-
-
-
+# если ты это читаешь, я оч признателенXD
