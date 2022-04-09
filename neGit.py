@@ -7,7 +7,7 @@ import os, string, json, datetime, shutil, codecs
 # --------------------------- #
 windowLen = 121 #длина окна скрипта
 os.system(f"mode con:cols={windowLen} lines=29") #устанавливаем длину окна скрипта
-logo = "@4Tipsy - neGit v3.1"
+logo = "@4Tipsy - neGit v4.4"
 
 print(windowLen * "#")
 print("###" + (windowLen - 6)*" " + "###")
@@ -23,6 +23,9 @@ try:
         print(windowLen * "-")
         lines = readme.readlines()
         for line in lines:
+            if "updates:" in line:
+                # пропускаем информацию про апдейты
+                break
             print(line.strip())
     print(windowLen * "-")
     print("\n")
@@ -46,22 +49,21 @@ if len(presets) > 0:
                 if presetName[0] == "?":
                     # вывести инфу о пресете
                     preset4info = presets[presetName[1: len(presetName)]]
-
                     print("-"*windowLen)
-                    print(f"{presetName[1: len(presetName)]}(префикс-{preset4info[3]}):")
-                    print(f"{preset4info[0]} <-- {preset4info[1]}")
-                    print(f"ignored: {preset4info[2]}")
+                    print(f"{presetName}: {preset4info['storage']} <-- {preset4info['files']}, ignored:{preset4info['ignored']}, prename:{preset4info['prename']}")
                     print("\n")
+                    
+                    
 
                 elif presetName == "0":
                     break
                 else:
                     chosenPreset = presets[presetName]
 
-                    STORAGE = chosenPreset[0]
-                    FILES = chosenPreset[1]
-                    IGNORED = chosenPreset[2]
-                    PRENAME = chosenPreset[3]
+                    STORAGE = chosenPreset["storage"]
+                    FILES = chosenPreset["files"]
+                    IGNORED = chosenPreset["ignored"]
+                    PRENAME = chosenPreset["prename"]
                 
                     presetUsed = True #для пропуска выбора файлов и т.д.
                     break
@@ -146,7 +148,7 @@ if not presetUsed:
 # --------------------------- #
 
 def mycopy(src, dst, follow_symlinks=True):
-    print("copying-", src, end='\r')
+    print(os.path.basename(STORAGE), "<- ", src, " "*(windowLen-len(src)), end='\r')
     return shutil.copy2(src, dst, follow_symlinks=follow_symlinks)
 def myignore(path, filenames):
     toReturn = []
@@ -185,13 +187,21 @@ if not presetUsed:
     print(f"-->{PRENAME} -префикс пред именем сейва")
           
     if input("(1-yes // [any]-no)") == "1":
-        newPresetName = input("Название пресета > ")
-        presets[newPresetName] = [STORAGE, FILES, IGNORED, PRENAME]
-        print(f"presets[{newPresetName}] = [{STORAGE}, {FILES}, ignored:{IGNORED}, prename:{PRENAME}]")
-          
-        if input("Подтвердить?(1-yes // [any]-no)") == "1": 
-            with open("presets.json", "w") as write_file:
-                json.dump(presets, write_file)
+        while True:
+            newPresetName = input("Название пресета > ")
+            print(f"presets[{newPresetName}] = {STORAGE} <- {FILES}, ignored:{IGNORED}, prename:{PRENAME}")
+            if input("Подтвердить имя?(1-yes // [any]-no)") == "1":
+                break
+
+        presets[newPresetName] = {}
+        presets[newPresetName]["storage"] = STORAGE
+        presets[newPresetName]["files"] = FILES
+        presets[newPresetName]["ignored"] = IGNORED
+        presets[newPresetName]["prename"] = PRENAME
+         
+        with open("presets.json", "w") as write_file:
+            json.dump(presets, write_file, indent=4)
+        print("-пресет создан-")
 
 
 # ---- завершение работы ---- #
