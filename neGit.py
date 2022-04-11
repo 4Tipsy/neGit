@@ -160,14 +160,22 @@ def myignore(path, filenames):
 
 if not presetUsed:
     PRENAME = input("Какой префикс сделать перед именем сейва? > ")
+
 # так мы назовем сейв
 saveName = PRENAME + datetime.datetime.today().strftime("(%Y-%m-%d)(%H-%M-%S)") + os.path.basename(FILES)
 
+# для info файла
+reasonTexted = input("Назовите причину бекапа > ") 
+
+# копирование
 shutil.copytree(FILES, (STORAGE + "\\" + saveName),ignore=myignore , copy_function=mycopy)
 
+
+# создание info файла
 with open((STORAGE + "\\" + saveName + "\\" + "info.txt"), "w") as file:
-    file.write(f"Copied from {FILES}\n{logo}\nIgnored: {IGNORED}")
-    
+    file.write(f"Copied from {FILES}\n{logo}\nIgnored: {IGNORED}\n\nWhy backuped: {reasonTexted}")
+ 
+
 print("\n")
 print("-проверка: " + str(os.path.exists(STORAGE + "\\" + saveName)) + "-")
 print("Сохранено как: " + os.path.basename(STORAGE + "\\" + saveName))
@@ -208,7 +216,6 @@ if not presetUsed:
 if presetUsed:
     print(f"{STORAGE} <-- {FILES}, ignored:{IGNORED}, prename:{PRENAME}")
 input("-работа скрипта завершена-")
-
 
 
 
