@@ -37,7 +37,7 @@ except:
 # --------------------------- #
 
 presetUsed = False
-with open("presets.json", "r") as read_file:
+with open("presets.json", "r", encoding='utf-8') as read_file:
     presets = json.load(read_file)
 if len(presets) > 0:
     print("Использовать пресет?")
@@ -172,7 +172,7 @@ shutil.copytree(FILES, (STORAGE + "\\" + saveName),ignore=myignore , copy_functi
 
 
 # создание info файла
-with open((STORAGE + "\\" + saveName + "\\" + "info.txt"), "w") as file:
+with open((STORAGE + "\\" + saveName + "\\" + "info.txt"), "w", encoding='utf-8') as file:
     file.write(f"Copied from {FILES}\n{logo}\nIgnored: {IGNORED}\n\nWhy backuped: {reasonTexted}")
  
 
@@ -207,7 +207,7 @@ if not presetUsed:
         presets[newPresetName]["ignored"] = IGNORED
         presets[newPresetName]["prename"] = PRENAME
          
-        with open("presets.json", "w") as write_file:
+        with open("presets.json", "w", encoding='utf-8') as write_file:
             json.dump(presets, write_file, indent=4)
         print("-пресет создан-")
 

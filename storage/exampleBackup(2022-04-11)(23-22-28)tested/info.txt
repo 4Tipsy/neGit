@@ -1,0 +1,5 @@
+Copied from D:\tested
+@4Tipsy - neGit v4.4
+Ignored: ['storage', 'folder2']
+
+Why backuped: показать как выглядит такой вот бекап
