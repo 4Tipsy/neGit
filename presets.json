@@ -1,26 +1,4 @@
 {
-    "gg": {
-        "storage": "C:\\neGit\\4test",
-        "files": "c:\\neGit",
-        "ignored": [
-            "4test",
-            "storage"
-        ],
-        "prename": "test"
-    },
-    "plaza": {
-        "storage": "C:\\neGit\\storage",
-        "files": "C:\\Work Space\\web dev\\projects\\Plaza-shop\\dev",
-        "ignored": [
-            "storage",
-            ".idea",
-            ".sass-cache",
-            "node_modules",
-            "package-lock.json",
-            "package.json"
-        ],
-        "prename": "plaza"
-    },
     "4example": {
         "storage": "C:\\neGit\\storage",
         "files": "D:\\tested",
