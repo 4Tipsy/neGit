@@ -7,5 +7,18 @@
             "folder2"
         ],
         "prename": "exampleBackup"
+    },
+    "plaza": {
+        "storage": "C:\\neGit\\storage",
+        "files": "C:\\Work Space\\web dev\\projects\\Plaza-shop\\dev",
+        "ignored": [
+            "storage",
+            ".idea",
+            ".sass-cache",
+            "node_modules",
+            "package-lock.json",
+            "package.json"
+        ],
+        "prename": "plaza"
     }
 }
