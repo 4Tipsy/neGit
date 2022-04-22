@@ -225,7 +225,7 @@ else:
 
 # создание info файла
 with open((STORAGE + "\\" + saveName + "\\" + "info.txt"), "w", encoding='utf-8') as file:
-    file.write(f"Copied from {FILES} by {methodUsed}{'(принуд)' if alwaysUseShutil == 1 else ''}\nIgnored: {IGNORED}\n\nWhy backuped: {reasonTexted}\n{logo}")
+    file.write(f"Copied from ( {FILES} ) by {methodUsed}{'(принуд)' if alwaysUseShutil == 1 else ''}\nIgnored: {IGNORED}\n\nWhy backuped: {reasonTexted}\n{logo}")
  
 
 print("\n")
@@ -268,7 +268,7 @@ if not presetUsed:
 
 # ---- завершение работы ---- #
 print("\n")
-print("-работа скрипта завершена-")
+input("-работа скрипта завершена-")
 
 
 
