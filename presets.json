@@ -1,5 +1,6 @@
 {
     "4example": {
+        "alwaysUseShutil": 0,
         "storage": "C:\\neGit\\storage",
         "files": "D:\\tested",
         "ignored": [
@@ -9,6 +10,7 @@
         "prename": "exampleBackup"
     },
     "plaza": {
+        "alwaysUseShutil": 0,
         "storage": "C:\\neGit\\storage",
         "files": "C:\\Work Space\\web dev\\projects\\Plaza-shop\\dev",
         "ignored": [
@@ -21,4 +23,5 @@
         ],
         "prename": "plaza"
     }
+    
 }
