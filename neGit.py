@@ -4,7 +4,8 @@ import os, string, json, datetime, time, shutil, codecs, sys
 
 # --- флаги(опции) скрипта -- #
 FLAG__useWin_XCopy = True                  # использует более быстрый xcopy для windows
-FLAG__remove_ignoredTxt_after_copy = True  # удаляет ignored.txt (нужен, чтобы записать в него IGNORED для xcopy)
+FLAG__remove_ignoredTxt_after_copy = True  # удаляет ignored.txt после копирования (нужен, чтобы записать в него IGNORED во время использования xcopy)
+FLAG__be_able_to_nullify_presets = True    # возможность обнулять пресеты в скрипте (разрешение делать это))
 
 
 # --------------------------- #
@@ -14,7 +15,7 @@ windowLen = 121 #длина окна скрипта
 if sys.platform == "win32":
     os.system(f"mode con:cols={windowLen} lines=29") #устанавливаем длину окна скрипта
     
-logo = "@4Tipsy - neGit v5.0"
+logo = "@4Tipsy - neGit v5.1"
 
 print(windowLen * "#")
 print("###" + (windowLen - 6)*" " + "###")
@@ -48,7 +49,9 @@ with open("presets.json", "r", encoding='utf-8') as read_file:
     presets = json.load(read_file)
 if len(presets) > 0:
     print("Использовать пресет?")
-    if input("(1-yes // [any]-no)") == "1":
+
+    whatToDo = input("(1-yes // [any]-no // \"!\"-nullify presets)")
+    if whatToDo == "1":
         print("пресеты:",presets.keys())
         while True:
             try:
@@ -74,10 +77,22 @@ if len(presets) > 0:
                     IGNORED = chosenPreset["ignored"]
                     PRENAME = chosenPreset["prename"]
                 
-                    presetUsed = True #для пропуска выбора файлов и т.д.
+                    presetUsed = True # для пропуска выбора файлов и т.д.
                     break
             except:
                 print("-неправильное название-")
+
+    # обнуление пресетов
+    elif whatToDo == "!":
+        if FLAG__be_able_to_nullify_presets == False:
+            print("-возможность удалять пресеты отключена(FLAGS)-")
+
+        elif input("Обнулить пресеты?(1-yes // [any]-no)") == "1":
+            with open("presets.json", "w") as write_file:
+                json.dump({}, write_file)
+            input("presets.json was nullified")
+            os.abort()
+
 else:
     print("У вас нет пресетов")
 
@@ -225,7 +240,7 @@ else:
 
 # создание info файла
 with open((STORAGE + "\\" + saveName + "\\" + "info.txt"), "w", encoding='utf-8') as file:
-    file.write(f"Copied from ( {FILES} ) by {methodUsed}{'(принуд)' if alwaysUseShutil == 1 else ''}\nIgnored: {IGNORED}\n\nWhy backuped: {reasonTexted}\n{logo}")
+    file.write(f"Copied from ( {FILES} ) by {methodUsed}{'(принуд)' if alwaysUseShutil == 1 else ''}\nIgnored: {IGNORED}\n\nWhy backuped: {reasonTexted}\n\n{logo}")
  
 
 print("\n")
@@ -250,9 +265,16 @@ if not presetUsed:
     if input("(1-yes // [any]-no)") == "1":
         while True:
             newPresetName = input("Название пресета > ")
-            print(f"presets[{newPresetName}] = {STORAGE} <- {FILES}, ignored:{IGNORED}, prename:{PRENAME}")
-            if input("Подтвердить имя?(1-yes // [any]-no)") == "1":
-                break
+
+            if newPresetName.isalnum(): # проверяем содержит имя пресета только буквы и цифры или нет
+
+                print(f"presets[{newPresetName}] = {STORAGE} <- {FILES}, ignored:{IGNORED}, prename:{PRENAME}")
+                if input("Подтвердить имя?(1-yes // [any]-no)") == "1":
+                    break
+
+            else:
+                print("-название пресета может содержать только буквы и цифры-\n")
+
 
         presets[newPresetName] = {}
         presets[newPresetName]["alwaysUseShutil"] = alwaysUseShutil
@@ -269,6 +291,9 @@ if not presetUsed:
 # ---- завершение работы ---- #
 print("\n")
 input("-работа скрипта завершена-")
+
+
+
 
 
 

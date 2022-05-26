@@ -1,5 +1,0 @@
-Copied from D:\tested by win_xcopy
-Ignored: ['4test', 'folder']
-
-Why backuped: показать как работает xcopy=)
-@4Tipsy - neGit v5.0
