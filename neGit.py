@@ -1,9 +1,12 @@
-# coding:utf8
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
 import os, string, json, datetime, time, shutil, codecs, sys
+
+os.chdir(os.path.dirname(__file__)) # эта штука нужна для поддержка линукса (чтобы ярлык не менял рабочую папку)
 
 
 # --- флаги(опции) скрипта -- #
-FLAG__useWin_XCopy = True                  # использует более быстрый xcopy для windows
+FLAG__use_XCopy_on_windows_instead = True  # использовать более быстрый XCopy в windows при копировании
 FLAG__remove_ignoredTxt_after_copy = True  # удаляет ignored.txt после копирования (нужен, чтобы записать в него IGNORED во время использования xcopy)
 FLAG__be_able_to_nullify_presets = True    # возможность обнулять пресеты в скрипте (разрешение делать это))
 
@@ -13,9 +16,10 @@ FLAG__be_able_to_nullify_presets = True    # возможность обнуля
 # --------------------------- #
 windowLen = 121 #длина окна скрипта
 if sys.platform == "win32":
-    os.system(f"mode con:cols={windowLen} lines=29") #устанавливаем длину окна скрипта
+    os.system(f"mode con:cols={windowLen} lines=29") # устанавливаем длину окна скрипта
+# для линукса установить ширину терминала я не смог понять как=(
     
-logo = "@4Tipsy - neGit v5.1"
+logo = "@4Tipsy - neGit v6.0"
 
 print(windowLen * "#")
 print("###" + (windowLen - 6)*" " + "###")
@@ -24,10 +28,15 @@ print("###" + " "*t + logo + " "*t + " ###")
 print("###" + (windowLen - 6)*" " + "###")
 print(windowLen * "#")
 
+
+print("\n" + "Рабочая директория - " + os.getcwd() )
+print("Ваша ОС - " + sys.platform)
+
 # readme
 try:
     with codecs.open("README.md", encoding="utf-8") as readme:
         print("\n")
+        print("[attention!]")
         print(windowLen * "-")
         lines = readme.readlines()
         for line in lines:
@@ -39,12 +48,13 @@ try:
 except:
     print("\n","-не удалось открыть/найти readme-","\n")
 
+
+
 # --------------------------- #
 # - использование пресетов  - #
 # --------------------------- #
 
-presetUsed = False # по дефолту
-
+presetUsed = False # эта переменная должна быть объявлена как False по дефолту
 with open("presets.json", "r", encoding='utf-8') as read_file:
     presets = json.load(read_file)
 if len(presets) > 0:
@@ -118,12 +128,10 @@ if not presetUsed:
         print(f"Хранилище содержит: {os.listdir(STORAGE)}")
         
     else:
-        print(f"Доступные диски: {['%s:' % d for d in string.ascii_uppercase if os.path.exists('%s:' % d)]}")   
-
         while True:
             thisDir = input("Выберите папку > ")
             if os.path.exists(thisDir):
-                print(f"Путь - {os.path.abspath(thisDir)}")
+                print(f"\n\nПуть - {os.path.abspath(thisDir)}")
                 print(f"Папка содержит: {os.listdir(thisDir)}")
 
                 print("Выбрать эту папку?")
@@ -144,6 +152,7 @@ if not presetUsed:
     while True:
         thisDir = input("Выберите папку > ")
         if os.path.exists(thisDir):
+            print("\n")
             print(f"Путь - {os.path.abspath(thisDir)}")
             print(f"Папка содержит: {os.listdir(thisDir)}")
 
@@ -157,7 +166,7 @@ if not presetUsed:
                 IGNORED = [os.path.basename(STORAGE)]
                 while True:
                     ignore = input("(имя папки или файла // [enter] - подтвердить) > ")
-                    if ignore != "" and os.path.exists(os.path.abspath(thisDir)+"//"+ignore):
+                    if ignore != "" and os.path.exists( os.path.join(os.path.abspath(thisDir), ignore) ):
                         IGNORED.append(ignore)
                         print("ignored:", IGNORED)
 
@@ -213,7 +222,7 @@ saveName = PRENAME + "("+ name_ +")" + datetime.datetime.today().strftime("(%Y-%
 # ----- само копирование ---- #
 copyStartTime = time.time()
 # для windows
-if (sys.platform == "win32") and (FLAG__useWin_XCopy) and (alwaysUseShutil == 0):
+if (sys.platform == "win32") and (FLAG__use_XCopy_on_windows_instead) and (alwaysUseShutil == 0):
     methodUsed = "win_xcopy"
 
     # создаем файл игнорирования
@@ -222,7 +231,7 @@ if (sys.platform == "win32") and (FLAG__useWin_XCopy) and (alwaysUseShutil == 0)
             write_file.write(f"\\{i}\\\n")
 
     # копируем файлы
-    path_ = STORAGE+'\\'+saveName
+    path_ = os.path.join(STORAGE, saveName)
     os.system(f"mkdir {path_}")
     os.system(f'xcopy "{FILES}" "{path_}" /E /H /exclude:ignored.txt')
     print("если тут не все файлы, скорее всего их просто не назвало(и такое бывает...)")
@@ -235,17 +244,17 @@ if (sys.platform == "win32") and (FLAG__useWin_XCopy) and (alwaysUseShutil == 0)
 # в остальных случаях
 else:
     methodUsed = "py_shutil"
-    shutil.copytree(FILES, (STORAGE + "\\" + saveName),ignore=myignore , copy_function=mycopy)
+    shutil.copytree(FILES, (os.path.join(STORAGE, saveName)),ignore=myignore , copy_function=mycopy)
 
 
 # создание info файла
-with open((STORAGE + "\\" + saveName + "\\" + "info.txt"), "w", encoding='utf-8') as file:
+with open(os.path.join(STORAGE, saveName, "info.txt"), "w", encoding='utf-8') as file:
     file.write(f"Copied from ( {FILES} ) by {methodUsed}{'(принуд)' if alwaysUseShutil == 1 else ''}\nIgnored: {IGNORED}\n\nWhy backuped: {reasonTexted}\n\n{logo}")
  
 
 print("\n")
 print(f"метод: {methodUsed}{'(принуд)' if alwaysUseShutil == 1 else ''} | {time.time() - copyStartTime} sec")
-print("Сохранено как: " + os.path.basename(STORAGE + "\\" + saveName))
+print("Сохранено как: " + os.path.basename(os.path.join(STORAGE, saveName)) )
 
 
 # --------------------------- #
@@ -291,9 +300,6 @@ if not presetUsed:
 # ---- завершение работы ---- #
 print("\n")
 input("-работа скрипта завершена-")
-
-
-
 
 
 
