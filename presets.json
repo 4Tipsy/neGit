@@ -1,11 +1,1 @@
-{
-    "gfdgfdg": {
-        "alwaysUseShutil": 0,
-        "storage": "/home/qwerty/my-projects/neGit/storage",
-        "files": "/home/qwerty/my-projects/papka",
-        "ignored": [
-            "storage"
-        ],
-        "prename": ""
-    }
-}
+{}
