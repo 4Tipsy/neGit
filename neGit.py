@@ -1,8 +1,8 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import os, string, json, datetime, time, shutil, codecs, sys
 
-os.chdir(os.path.dirname(__file__)) # эта штука нужна для поддержка линукса (чтобы ярлык не менял рабочую папку)
+os.chdir(os.path.dirname(__file__)) # эта штука нужна для поддержки линукса (чтобы ярлык не менял рабочую папку)
 
 
 # --- флаги(опции) скрипта -- #
@@ -17,7 +17,11 @@ FLAG__be_able_to_nullify_presets = True    # возможность обнуля
 windowLen = 121 #длина окна скрипта
 if sys.platform == "win32":
     os.system(f"mode con:cols={windowLen} lines=29") # устанавливаем длину окна скрипта
-# для линукса установить ширину терминала я не смог понять как=(
+elif sys.platform == 'linux':
+    if 'xterm' in os.environ.get('TERM'):
+        os.system(f"resize -s 23 {windowLen}")
+    else:
+        os.system(f"stty cols {windowLen} rows 23")
     
 logo = "@4Tipsy - neGit v6.0"
 
@@ -161,7 +165,7 @@ if not presetUsed:
 
                 print("\n")
                 print(f"Выберите игнорируемые папки из\n {os.listdir(thisDir)}")
-                print(f"{os.path.basename(STORAGE)}-(выбранное хранилище) уже указано по умолчанию, во избежание бесконечного копирования")
+                print(f"{os.path.basename(STORAGE)}-(выбранное хранилище) уже указано по умолчанию, во избежание бесконечного самокопирования")
                 # реализация игнорирования папок
                 IGNORED = [os.path.basename(STORAGE)]
                 while True:
@@ -206,7 +210,7 @@ def myignore(path, filenames):
 
 
 # для названия сейва
-name_ = input("\nНазвание(причина) бекапа > ") 
+reasonDirName = input("\nНазвание(причина) бекапа > ") 
 if not presetUsed:
     PRENAME = input("preName > ")
 
@@ -216,7 +220,7 @@ reasonTexted = input("Назовите причину бекапа > ")
 print("\n")
 
 # так мы назовем сейв
-saveName = PRENAME + "("+ name_ +")" + datetime.datetime.today().strftime("(%Y-%m-%d)(%H-%M-%S)")
+saveName = reasonDirName + datetime.datetime.today().strftime("(%Y-%m-%d)(%H-%M-%S)") + "("+ PRENAME +")"
 
 
 # ----- само копирование ---- #
@@ -302,5 +306,8 @@ print("\n")
 input("-работа скрипта завершена-")
 
 
-
-# если ты это читаешь, я оч признателенXD
+# это финальная версия скрипта (больше никаких обновлений скорее всего уже не будет),
+# весь необходимый функционал уже реализован и готов к использованию (поломать что-либо этим скриптом тоже не выйдет, все учтено)
+# возможное исключение - реализация поддержки macOS, но и тут (как мне кажется) особых усилий не потребуется,
+# максимум - изменение длины консольки сделать 
+# @4Tipsy
